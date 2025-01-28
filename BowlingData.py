@@ -35,23 +35,6 @@ def backToExcel(dataFrames: dict) -> None:
                     print("Excel sheet " + sheet + " created")
                 except Exception as e:
                     print("Error creating workbook.")
-            """
-            awardSummary = []
-            for division, bowlerList in awards.items():
-                awardSummary.append([division])
-                awardSummary.append(["Bowler Name", "New Awards"])
-                seenBowlers = set()
-                for bowler, awardList in bowlerList:
-                    if (division, bowler) not in seenBowlers:
-                        seenBowlers.add((division, bowler))
-                        uniqueAwards = ", ".join(set(awardList))
-                        awardSummary.append([bowler, uniqueAwards])
-                awardSummary.append([])
-
-            awardSummaryDf = pd.DataFrame(awardSummary)
-            awardSummaryDf.to_excel(writer, sheet_name="Award Summary", index=False, startrow=0, startcol=0)
-            print("Excel sheet: Awards Summary created")
-            """
 
         print("Workbook saved to: " + save_path)
 
@@ -193,27 +176,6 @@ class Bowler:
                 self.highSeries = float((row[3]))
 
     def getPOA(self):
-
-        """
-                for stat in self.stats:
-                    try:
-                        if str((stat[3])[:3]) == "" or str((stat[3])[:3]) == "-":
-                            game1 = 0
-                        else:
-                            game1 = int((stat[3])[:3])
-                        if str((stat[4])[:3]) == "" or str((stat[4])[:3]) == "-":
-                            game2 = 0
-                        else:
-                            game2 = int((stat[4])[:3])
-                        if str((stat[5])[:3]) == "" or str((stat[5])[:3]) == "-":
-                            game3 = 0
-                        else:
-                            game3 = int((stat[5])[:3])
-
-                        hasPOA = ((game1 - self.average) >= 100) or ((game2 - self.average) >= 100) or ((game3 - self.average) >= 100)
-                    except:
-                        pass
-                """
 
         hasPOA = False
         average =self.average
@@ -579,40 +541,7 @@ class Sheet:
 
                     else:
                         pass
-                    """
-                    #Checking if bowler has the highest average in their division
-                    elif (str(type) == "High Avg" and ((foundHighAvgMen == False and bowler.getGender() == "Men")
-                          or (foundHighAvgWomen == False and bowler.getGender() == "Women"))):
-
-                        check = division.getHighestAvg() == bowler
-                        if check:
-                            if bowler.getGender() == "Men":
-                                foundHighAvgMen = True
-                            elif bowler.getGender() == "Woman":
-                                foundHighAvgWomen = True
-
-                    #Checking if the bowler has the highest single in their division
-                    elif (str(type) == "High Single" and ((foundHighSingleMen == False and bowler.getGender() == "Men")
-                          or (foundHighSingleWomen == False and bowler.getGender() == "Women"))):
-
-                        check = division.getHighestSingle() == bowler
-                        if check:
-                            if bowler.getGender() == "Man":
-                                foundHighSingleMen = True
-                            elif bowler.getGender() == "Women":
-                                foundHighSingleWomen = True
-
-                    #Checking if the bowler has the highest series in their division
-                    elif (str(type) == "High Series" and ((foundHighSeriesMen == False and bowler.getGender() == "Man")
-                          or (foundHighSeriesWomen == False and bowler.getGender() == "Woman"))):
-
-                        check = division.getHighestSeries() == bowler
-                        if check:
-                            if bowler.getGender() == "Man":
-                                foundHighSeriesMen = True
-                            elif bowler.getGender() == "Woman":
-                                foundHighSeriesWomen = True
-                    """
+                    
 
         women = division.getWomenTopPerformers()
 
