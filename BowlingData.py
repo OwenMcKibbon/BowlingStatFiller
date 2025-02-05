@@ -35,6 +35,23 @@ def backToExcel(dataFrames: dict) -> None:
                     print("Excel sheet " + sheet + " created")
                 except Exception as e:
                     print("Error creating workbook.")
+            """
+            awardSummary = []
+            for division, bowlerList in awards.items():
+                awardSummary.append([division])
+                awardSummary.append(["Bowler Name", "New Awards"])
+                seenBowlers = set()
+                for bowler, awardList in bowlerList:
+                    if (division, bowler) not in seenBowlers:
+                        seenBowlers.add((division, bowler))
+                        uniqueAwards = ", ".join(set(awardList))
+                        awardSummary.append([bowler, uniqueAwards])
+                awardSummary.append([])
+
+            awardSummaryDf = pd.DataFrame(awardSummary)
+            awardSummaryDf.to_excel(writer, sheet_name="Award Summary", index=False, startrow=0, startcol=0)
+            print("Excel sheet: Awards Summary created")
+            """
 
         print("Workbook saved to: " + save_path)
 
@@ -178,10 +195,22 @@ class Bowler:
     def getPOA(self):
 
         hasPOA = False
-        average =self.average
-        highSingle =self.highSingle
-        if highSingle >= average + 100:
-            hasPOA = True
+
+        for stat in self.stats[1:]:
+            try:
+                game1 = int((stat[3])[:3])
+                game2 = int((stat[4])[:3])
+                game3 = int((stat[5])[:3])
+                if (stat[9])[:5] == "-":
+                    average = float((stat[6])[:5])
+                else:
+                    average = float((stat[9])[:6])
+
+                if game1 >= average + 100 or game2 >= average + 100 or game3 >= average + 100:
+                    hasPOA = True
+                    break
+            except ValueError:
+                pass
         return hasPOA
 
 
@@ -200,12 +229,6 @@ class Bowler:
             if lower <= int(stat[-2]) < upper:
                 return True
         return False
-
-    def updateNewXs(self, cellType: str):
-        self.newXs.append(cellType)
-
-    def getNewXs(self):
-        return self.newXs
 
 
 
@@ -369,11 +392,6 @@ class Division:
     def getMenTopPerformers(self):
         return self.topPerformersMen
 
-    def getAwardsList(self):
-        for bowler in self.bowlers.values():
-            self.awardSummary.append((bowler.getName(), bowler.getNewXs()))
-        return self.awardSummary
-
     def clearTopPerformers(self):
         self.topPerformersMen = {}
         self.topPerformersWomen = {}
@@ -419,7 +437,11 @@ class Sheet:
             self.__wholeFrame = self.rejoin(gameDf, seriesDf)
 
         elif self.__division.getName() == "Special Awards":
-            self.__wholeFrame.replace({'X': '', 'x' : ''}, inplace=True)
+            #self.__wholeFrame.replace({'X': '', 'x' : ''}, inplace=True)
+            self.__wholeFrame.iloc[:, [i for i in range(self.__wholeFrame.shape[1]) if i != 2]] = \
+                self.__wholeFrame.iloc[:, [i for i in range(self.__wholeFrame.shape[1]) if i != 2]].replace(
+                    {'X': '', 'x': ''}, inplace=False)
+
             bantamAwardsDf, juniorAwardsDf, seniorAwardsDf = self.splitSpecial()
 
             bantamDivision: Division = self.__subBantam
@@ -541,7 +563,6 @@ class Sheet:
 
                     else:
                         pass
-                    
 
         women = division.getWomenTopPerformers()
 
